@@ -250,6 +250,7 @@ func (h *sentPacketHandler) SentPacket(p *Packet) {
 	}
 }
 
+// 2023.4.1 hck 加密级别与包号空间
 func (h *sentPacketHandler) getPacketNumberSpace(encLevel protocol.EncryptionLevel) *packetNumberSpace {
 	switch encLevel {
 	case protocol.EncryptionInitial:
@@ -325,9 +326,9 @@ func (h *sentPacketHandler) ReceivedAck(ack *wire.AckFrame, encLevel protocol.En
 			}
 			h.rttStats.UpdateRTT(rcvTime.Sub(p.SendTime), ackDelay, rcvTime)
 			if h.logger.Debug() {
-				h.logger.Debugf("\tupdated RTT: %s (σ: %s)", h.rttStats.SmoothedRTT(), h.rttStats.MeanDeviation())
+				h.logger.Debugf("\tupdated RTT: %s (σ: %s)", h.rttStats.SmoothedRTT(), h.rttStats.MeanDeviation()) // 2023.4.1 hck log RTT
 			}
-			h.congestion.MaybeExitSlowStart()
+			h.congestion.MaybeExitSlowStart() // 2023.4.1 hck 检测慢启动
 		}
 	}
 	if err := h.detectLostPackets(rcvTime, encLevel); err != nil {
@@ -358,6 +359,7 @@ func (h *sentPacketHandler) ReceivedAck(ack *wire.AckFrame, encLevel protocol.En
 	h.numProbesToSend = 0
 
 	if h.tracer != nil {
+		// 2023.4.1 hck 可能是测量关键
 		h.tracer.UpdatedMetrics(h.rttStats, h.congestion.GetCongestionWindow(), h.bytesInFlight, h.packetsInFlight())
 	}
 
@@ -373,7 +375,7 @@ func (h *sentPacketHandler) GetLowestPacketNotConfirmedAcked() protocol.PacketNu
 // Packets are returned in ascending packet number order.
 func (h *sentPacketHandler) detectAndRemoveAckedPackets(ack *wire.AckFrame, encLevel protocol.EncryptionLevel) ([]*Packet, error) {
 	pnSpace := h.getPacketNumberSpace(encLevel)
-	h.ackedPackets = h.ackedPackets[:0]
+	h.ackedPackets = h.ackedPackets[:0] // 2023.4.1 hck 数组已分配，用切片来进行实际操作，避免重新分配
 	ackRangeIndex := 0
 	lowestAcked := ack.LowestAcked()
 	largestAcked := ack.LargestAcked()
