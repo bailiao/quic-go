@@ -15,12 +15,14 @@ var errInvalidAckRanges = errors.New("AckFrame: ACK frame contains invalid ACK r
 
 // An AckFrame is an ACK frame
 type AckFrame struct {
+	// 2023.4.1 hck 降序排列
 	AckRanges []AckRange // has to be ordered. The highest ACK range goes first, the lowest ACK range goes last
 	DelayTime time.Duration
 
 	ECT0, ECT1, ECNCE uint64
 }
 
+// 2023.4.1 hck 解析ACK帧，用到了varint编码
 // parseAckFrame reads an ACK frame
 func parseAckFrame(r *bytes.Reader, ackDelayExponent uint8, _ protocol.VersionNumber) (*AckFrame, error) {
 	typeByte, err := r.ReadByte()
@@ -189,6 +191,7 @@ func (f *AckFrame) encodeAckRange(i int) (uint64 /* gap */, uint64 /* length */)
 		uint64(f.AckRanges[i].Largest - f.AckRanges[i].Smallest)
 }
 
+// 2023.4.1 hck 啥玩意？
 // HasMissingRanges returns if this frame reports any missing packets
 func (f *AckFrame) HasMissingRanges() bool {
 	return len(f.AckRanges) > 1
@@ -242,6 +245,7 @@ func (f *AckFrame) AcksPacket(p protocol.PacketNumber) bool {
 	i := sort.Search(len(f.AckRanges), func(i int) bool {
 		return p >= f.AckRanges[i].Smallest
 	})
+	// 2023.4.1 hck 找到满足条件的最小i值
 	// i will always be < len(f.AckRanges), since we checked above that p is not bigger than the largest acked
 	return p <= f.AckRanges[i].Largest
 }

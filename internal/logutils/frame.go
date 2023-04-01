@@ -6,6 +6,7 @@ import (
 	"github.com/quic-go/quic-go/logging"
 )
 
+// 2023.4.1 hck 将传输的帧转化成在日志中输出的帧
 // ConvertFrame converts a wire.Frame into a logging.Frame.
 // This makes it possible for external packages to access the frames.
 // Furthermore, it removes the data slices from CRYPTO and STREAM frames.
