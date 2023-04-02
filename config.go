@@ -113,6 +113,7 @@ func populateConfig(config *Config, defaultConnIDLen int) *Config {
 		connIDGenerator = &protocol.DefaultConnectionIDGenerator{ConnLen: conIDLen}
 	}
 
+	// 2023.4.2 hck quic配置一览
 	return &Config{
 		Versions:                         versions,
 		HandshakeIdleTimeout:             handshakeIdleTimeout,

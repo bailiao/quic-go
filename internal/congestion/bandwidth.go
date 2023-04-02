@@ -10,6 +10,7 @@ import (
 // Bandwidth of a connection
 type Bandwidth uint64
 
+// 2023.4.1 hck 设置bandwith？
 const infBandwidth Bandwidth = math.MaxUint64
 
 const (

@@ -8,6 +8,8 @@ import (
 	"github.com/quic-go/quic-go/internal/wire"
 )
 
+// 2023.4.2 hck 待做：尝试整理一个流程图
+
 type datagramQueue struct {
 	sendQueue chan *wire.DatagramFrame
 	nextFrame *wire.DatagramFrame
@@ -29,7 +31,7 @@ type datagramQueue struct {
 func newDatagramQueue(hasData func(), logger utils.Logger) *datagramQueue {
 	return &datagramQueue{
 		hasData:   hasData,
-		sendQueue: make(chan *wire.DatagramFrame, 1),
+		sendQueue: make(chan *wire.DatagramFrame, 1), // 2023.4.2 hck 缓冲区为1
 		rcvd:      make(chan struct{}, 1),
 		dequeued:  make(chan struct{}),
 		closed:    make(chan struct{}),
@@ -38,7 +40,7 @@ func newDatagramQueue(hasData func(), logger utils.Logger) *datagramQueue {
 }
 
 // AddAndWait queues a new DATAGRAM frame for sending.
-// It blocks until the frame has been dequeued.
+// It blocks until the frame has been "dequeued".
 func (h *datagramQueue) AddAndWait(f *wire.DatagramFrame) error {
 	select {
 	case h.sendQueue <- f:
@@ -97,7 +99,7 @@ func (h *datagramQueue) HandleDatagramFrame(f *wire.DatagramFrame) {
 	}
 }
 
-// Receive gets a received DATAGRAM frame.
+// Receive "gets" a received DATAGRAM frame.
 func (h *datagramQueue) Receive() ([]byte, error) {
 	for {
 		h.rcvMx.Lock()
