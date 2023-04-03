@@ -140,7 +140,7 @@ type SendStream interface {
 // * StatelessResetError: when we receive a stateless reset (this is a net.Error temporary error)
 // * VersionNegotiationError: returned by the client, when there's no version overlap between the peers
 type Connection interface {
-	// AcceptStream returns the next stream opened by the peer, blocking until one is available.
+	// """AcceptStream returns the next stream opened by the peer, blocking until one is available""".
 	// If the connection was closed due to a timeout, the error satisfies
 	// the net.Error interface, and Timeout() will be true.
 	AcceptStream(context.Context) (Stream, error)
@@ -289,7 +289,7 @@ type Config struct {
 	// MaxStreamReceiveWindow is the maximum stream-level flow control window for receiving data.
 	// If this value is zero, it will default to 6 MB.
 	MaxStreamReceiveWindow uint64
-	// InitialConnectionReceiveWindow is the initial size of the stream-level flow control window for receiving data.
+	// InitialConnectionReceiveWindow is the initial size of the connection-level flow control window for receiving data.
 	// If the application is consuming data quickly enough, the flow control auto-tuning algorithm
 	// will increase the window up to MaxConnectionReceiveWindow.
 	// If this value is zero, it will default to 512 KB.

@@ -74,12 +74,12 @@ func (s *receiveStream) StreamID() protocol.StreamID {
 	return s.streamID
 }
 
-// Read implements io.Reader. It is not thread safe!
+// Read implements io.Reader. """It is not thread safe!""""
 func (s *receiveStream) Read(p []byte) (int, error) {
 	// Concurrent use of Read is not permitted (and doesn't make any sense),
 	// but sometimes people do it anyway.
 	// Make sure that we only execute one call at any given time to avoid hard to debug failures.
-	s.readOnce <- struct{}{}
+	s.readOnce <- struct{}{} // 2023.4.2 hck 相当于一个锁
 	defer func() { <-s.readOnce }()
 
 	s.mutex.Lock()

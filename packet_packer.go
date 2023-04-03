@@ -270,11 +270,11 @@ func (p *packetPacker) packConnectionClose(
 		}
 		sealers[i] = sealer
 		var hdr *wire.ExtendedHeader
-		if encLevel == protocol.Encryption1RTT {
+		if encLevel == protocol.Encryption1RTT { // 2023.4.2 hck 短包
 			connID = p.getDestConnID()
 			oneRTTPacketNumber, oneRTTPacketNumberLen = p.pnManager.PeekPacketNumber(protocol.Encryption1RTT)
 			size += p.shortHeaderPacketLength(connID, oneRTTPacketNumberLen, pl)
-		} else {
+		} else { // 2023.4.2 hck 长包
 			hdr = p.getLongHeader(encLevel, v)
 			hdrs[i] = hdr
 			size += p.longHeaderPacketLength(hdr, pl, v) + protocol.ByteCount(sealer.Overhead())
@@ -354,7 +354,7 @@ func (p *packetPacker) initialPaddingLen(frames []*ackhandler.Frame, size protoc
 }
 
 // PackCoalescedPacket packs a new packet.
-// It packs an Initial / Handshake if there is data to send in these packet number spaces.
+// It packs an Initial / Handshake if """there is data to send""" in these packet number spaces.
 // It should only be called before the handshake is confirmed.
 func (p *packetPacker) PackCoalescedPacket(onlyAck bool, v protocol.VersionNumber) (*coalescedPacket, error) {
 	maxPacketSize := p.maxPacketSize
@@ -679,6 +679,7 @@ func (p *packetPacker) composeNextPacket(maxFrameSize protocol.ByteCount, onlyAc
 		}
 	}
 
+	// 2023.4.2 hck 都是p1.frames？
 	if hasData {
 		var lengthAdded protocol.ByteCount
 		pl.frames, lengthAdded = p.framer.AppendControlFrames(pl.frames, maxFrameSize-pl.length, v)

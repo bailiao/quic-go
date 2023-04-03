@@ -145,6 +145,7 @@ func (u *packetUnpacker) unpackLongHeaderPacket(opener handshake.LongHeaderOpene
 	return extHdr, decrypted, nil
 }
 
+// 2023.4.2 hck 为什么是handshake?
 func (u *packetUnpacker) unpackShortHeaderPacket(opener handshake.ShortHeaderOpener, rcvTime time.Time, data []byte) (protocol.PacketNumber, protocol.PacketNumberLen, protocol.KeyPhaseBit, []byte, error) {
 	l, pn, pnLen, kp, parseErr := u.unpackShortHeader(opener, data)
 	// If the reserved bits are set incorrectly, we still need to continue unpacking.

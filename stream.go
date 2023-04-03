@@ -138,7 +138,7 @@ func (s *stream) closeForShutdown(err error) {
 }
 
 // checkIfCompleted is called from the uniStreamSender, when one of the stream halves is completed.
-// It makes sure that the onStreamCompleted callback is only called if both receive and send side have completed.
+// """It makes sure that the onStreamCompleted callback is only called if both receive and send side have completed."""
 func (s *stream) checkIfCompleted() {
 	if s.sendStreamCompleted && s.receiveStreamCompleted {
 		s.sender.onStreamCompleted(s.StreamID())
