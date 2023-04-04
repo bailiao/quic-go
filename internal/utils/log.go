@@ -112,6 +112,16 @@ func (l *defaultLogger) Debug() bool {
 func init() {
 	DefaultLogger = &defaultLogger{}
 	DefaultLogger.SetLogLevel(readLoggingEnv())
+	// 2023.4.3 hck 设置日志打印位置
+	path := "D:\\Learn\\毕设\\QUIC\\quic-go\\logFile\\"
+	currentTime := time.Now().Format("20060102_150405")
+	filename := path + currentTime + "_log.txt"
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+	if err != nil {
+		log.Fatal("无法创建日志文件：", err)
+	}
+	log.SetOutput(file)
+	// end
 }
 
 func readLoggingEnv() LogLevel {
