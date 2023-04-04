@@ -518,7 +518,7 @@ func (s *connection) preSetup() {
 	s.connState.Version = s.version
 }
 
-// run the connection main loop
+// """run the connection main loop"""
 func (s *connection) run() error {
 	defer s.ctxCancel()
 
@@ -1733,7 +1733,7 @@ func (s *connection) applyTransportParameters() {
 func (s *connection) sendPackets() error {
 	s.pacingDeadline = time.Time{}
 
-	var sentPacket bool // only used in for packets sent in send mode SendAny
+	var sentPacket bool // only used in for packets sent in send mode """SendAny"""
 	for {
 		sendMode := s.sentPacketHandler.SendMode()
 		if sendMode == ackhandler.SendAny && s.handshakeComplete && !s.sentPacketHandler.HasPacingBudget() {
